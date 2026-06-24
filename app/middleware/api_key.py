@@ -19,11 +19,17 @@ logger = structlog.get_logger()
 
 class ApiKeyMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
+        if not settings.API_KEY_ENABLED:
+            return await call_next(request)
+
         if request.url.path == "/health" or request.url.path.startswith("/test-errors"):
             return await call_next(request)
 
-        if request.client and request.client.host in ("127.0.0.1", "localhost", "::1") and request.client.port == 8000:
-            logger.debug("api_key.skipped", reason="localhost", client_host=request.client.host)
+        if settings.APP_ENV == "development" and (
+            request.url.path == "/openapi.json"
+            or request.url.path == "/docs"
+            or request.url.path.startswith("/docs/")
+        ):
             return await call_next(request)
 
 

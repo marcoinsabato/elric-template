@@ -34,7 +34,8 @@ def create_app() -> FastAPI:
         docs_url="/docs" if settings.APP_DEBUG else None,
     )
 
-    app.add_middleware(ApiKeyMiddleware)
+    if settings.API_KEY_ENABLED:
+        app.add_middleware(ApiKeyMiddleware)
     app.add_middleware(RateLimitMiddleware)
     app.add_middleware(LoggingMiddleware)
 

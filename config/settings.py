@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     REDIS_URL: str = "redis://localhost:6379/0"
 
     # Auth
+    API_KEY_ENABLED: bool = False
     API_KEY_HEADER: str = "X-API-Key"
     API_KEY_PREFIX: str = "elk_live_"
 
