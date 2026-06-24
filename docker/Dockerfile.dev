@@ -1,0 +1,27 @@
+FROM python:3.12-slim
+
+# Installa uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+
+# Setup working directory
+WORKDIR /app
+
+# Copia file di configurazione e README (necessario per hatchling)
+COPY pyproject.toml uv.lock* README.md ./
+
+# Installa dipendenze (include dev dependencies per development)
+RUN uv sync --frozen
+
+# Copia il codice sorgente
+COPY . .
+
+# Variabili d'ambiente
+ENV PATH="/app/.venv/bin:$PATH"
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Esponi porta
+EXPOSE 8000
+
+# Comando di default (con hot-reload)
+CMD ["uv", "run", "uvicorn", "app:create_app", "--factory", "--reload", "--host", "0.0.0.0", "--port", "8000"]
